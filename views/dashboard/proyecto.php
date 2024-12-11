@@ -9,7 +9,7 @@
         </div>
     </div>
     <ul class="listado-tareas" id="listado-tareas">
-        
+
     </ul>
 
 
@@ -19,6 +19,7 @@
 
 <?php 
     $script = '
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="build/js/tareas.js"></script>
         '
 ?>

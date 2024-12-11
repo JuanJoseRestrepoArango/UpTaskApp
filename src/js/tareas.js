@@ -66,6 +66,9 @@
             btEliminarTarea.classList.add('eliminar-tarea');
             btEliminarTarea.dataset.idTarea = tarea.id;
             btEliminarTarea.textContent = 'Eliminar'
+            btEliminarTarea.ondblclick  = function(){
+                confirmarEliminarTarea({...tarea});
+            }
 
             opcionesDiv.appendChild(btnEstadoTarea);
             opcionesDiv.appendChild(btEliminarTarea);
@@ -239,10 +242,53 @@
 
         } catch (error) {
             console.log(error);
-        }
-        
-        
+        }  
 
+    }
+    function confirmarEliminarTarea(tarea){
+        Swal.fire({
+            title: "Seguro que quiere eliminar la tarea?",
+            showCancelButton: true,
+            confirmButtonText: "Si",
+            denyButtonText: "No"
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+              eliminarTarea(tarea);
+            } 
+          });
+
+
+    }
+    async function eliminarTarea(tarea) {
+       
+        const {estado,id,nombre,proyectoId} = tarea;
+
+        const datos = new FormData();
+        datos.append('id',id);
+        datos.append('nombre',nombre);
+        datos.append('estado',estado);
+        datos.append('proyectoId',obtenerProyecto());
+
+
+        try {
+            const url = 'http://localhost:3000/api/tarea/eliminar';
+
+            const respuesta = await fetch(url,{
+                method:'POST',
+                body:datos
+            })
+
+            const resultado = await respuesta.json();
+            if(resultado.resultado){
+                //mostrarAlerta(resultado.mensaje,resultado.tipo,document.querySelector('.contenedor-nueva-tarea'));
+                Swal.fire('Eliminado!',resultado.mensaje,'succes');
+                tareas = tareas.filter(tareaMemoria=>tareaMemoria.id!==tarea.id);
+                mostrarTareas();
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
     function obtenerProyecto(){
         const proyectoParams = new URLSearchParams(window.location.search);
