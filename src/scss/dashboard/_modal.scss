@@ -39,6 +39,10 @@
             display: block;
             color: v.$indigo;
         }
+        input[type="text"]{
+            border: 1px solid v.$gris;
+            background-color: v.$grisClaro;
+        }
         .opciones{
             display: flex;
             justify-content: space-between
