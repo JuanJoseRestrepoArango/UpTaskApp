@@ -4,7 +4,9 @@
     let tareas = [];
     // Boton para mostrar el modal para agregar tarea
     const nuevaTareaBtn = document.querySelector('#agregar-tarea');
-    nuevaTareaBtn.addEventListener('click',mostrarFormulario);
+    nuevaTareaBtn.addEventListener('click',function(){
+        mostrarFormulario(false);
+    });
 
     async function obtenerTareas(){
 
@@ -48,6 +50,9 @@
 
             const nombreTarea = document.createElement('P');
             nombreTarea.textContent = tarea.nombre;
+            nombreTarea.onclick = function() {
+                mostrarFormulario(true,tarea);
+            }
 
             const opcionesDiv = document.createElement('DIV');
             opcionesDiv.classList.add('opciones');
@@ -58,7 +63,7 @@
             btnEstadoTarea.classList.add(`${estados[tarea.estado].toLowerCase()}`);
             btnEstadoTarea.textContent = estados[tarea.estado];
             btnEstadoTarea.dataset.estadoTarea = tarea.estado;
-            btnEstadoTarea.ondblclick = function(){
+            btnEstadoTarea.onclick = function(){
                 cambiarEstadoTarea({...tarea});
             }
             
@@ -66,7 +71,7 @@
             btEliminarTarea.classList.add('eliminar-tarea');
             btEliminarTarea.dataset.idTarea = tarea.id;
             btEliminarTarea.textContent = 'Eliminar'
-            btEliminarTarea.ondblclick  = function(){
+            btEliminarTarea.onclick  = function(){
                 confirmarEliminarTarea({...tarea});
             }
 
@@ -81,24 +86,27 @@
         });
     }
 
-    function mostrarFormulario(){
+    function mostrarFormulario(editar = false,tarea = {}){
         const modal = document.createElement('DIV');
         modal.classList.add('modal');
+        
         modal.innerHTML = `
             <form class="formulario nueva-tarea">
-                <legend>Añade una nueva tarea</legend>
+                <legend>${editar ? 'Editar Tarea': 'Añade una nueva tarea'}</legend>
                 <div class="campo">
-                    <label>Tarea</tarea>
+                    <label>${editar ? 'Cambiar Tarea:': 'Nueva tarea:'}</tarea>
                     <input
                         type="text"
                         name="tarea"
-                        placeholder="Añadir Tarea al Proyecto Actual"
+                        placeholder="${tarea.nombre ? 'Edita la tarea' : 'Añadir Tarea al Proyecto Actual'}"
                         id="tarea"
+                        value="${tarea.nombre ? tarea.nombre : ''}"
                     >
                 </div>
                 <div class="opciones">
-                    <input type="submit" class="submit-nueva-tarea" value="Añadir Tarea" />
+                    <input type="submit" class="submit-nueva-tarea" value="${tarea.nombre ? 'Edita' : 'Guardar'}" />
                     <button type="button" class="cerrar-modal">Cancelar</button>
+                </div>  
             </form>
         `;
 
