@@ -51,7 +51,7 @@
             const nombreTarea = document.createElement('P');
             nombreTarea.textContent = tarea.nombre;
             nombreTarea.onclick = function() {
-                mostrarFormulario(true,tarea);
+                mostrarFormulario(true,{...tarea});
             }
 
             const opcionesDiv = document.createElement('DIV');
@@ -104,7 +104,7 @@
                     >
                 </div>
                 <div class="opciones">
-                    <input type="submit" class="submit-nueva-tarea" value="${tarea.nombre ? 'Edita' : 'Guardar'}" />
+                    <input type="submit" class="submit-nueva-tarea" value="${tarea.nombre ? 'Editar' : 'Guardar'}" />
                     <button type="button" class="cerrar-modal">Cancelar</button>
                 </div>  
             </form>
@@ -126,7 +126,21 @@
                 }, 500);
             }
             if(e.target.classList.contains('submit-nueva-tarea')){
-                submitFormularioNuevaTarea();
+                const nombreTarea = document.querySelector('#tarea').value.trim();
+                if(nombreTarea === ''){
+                    //Mostrar alerta de error
+                    mostrarAlerta('El Nombre de la tarea es Obligatorio','error',document.querySelector('.formulario legend'));
+                    return
+                }
+
+                if(editar){
+                    tarea.nombre = nombreTarea;
+                    actualizarTarea(tarea);
+                }else{
+                    agregarTarea(nombreTarea);
+                }
+                
+               
             }
         })
 
@@ -135,16 +149,7 @@
 
     }
 
-    function submitFormularioNuevaTarea(){
-        const tarea = document.querySelector('#tarea').value.trim();
-        if(tarea === ''){
-            //Mostrar alerta de error
-            mostrarAlerta('El Nombre de la tarea es Obligatorio','error',document.querySelector('.formulario legend'));
-            return
-        }
 
-        agregarTarea(tarea);
-    }
 
     //Muestra un mensaje en la interfaz
     function mostrarAlerta(mensaje,tipo,referencia){
@@ -235,11 +240,23 @@
             const resultado = await respuesta.json();
 
             if(resultado.respuesta.tipo === 'exito'){
-                mostrarAlerta(resultado.respuesta.mensaje,resultado.respuesta.tipo,document.querySelector('.contenedor-nueva-tarea'));
+                
+                Swal.fire(
+                    resultado.respuesta.mensaje,
+                    resultado.respuesta.mensaje,
+                    'success'
+                )
+
+                const modal = document.querySelector('.modal');
+                
+                if(modal){
+                    modal.remove();
+                }
 
                 tareas = tareas.map(tareaMemoria=>{
                     if(tareaMemoria.id === id){
                         tareaMemoria.estado = estado;
+                        tareaMemoria.nombre = nombre;
                     }
 
                     return tareaMemoria;
